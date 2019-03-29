@@ -17,7 +17,8 @@ dist_distance = 0.042 # km
 # Import data and extract variables
 #--------------------------------
 df = pd.read_csv('data.csv')
-municipality = df.iloc[:,0].values # Name of municipality
+municipality = df.loc[:,'Node'].values # Name of municipality
+regions = df.loc[:,'Region'] # Name of regions
 
 scenarios=['A','B','C','D']
 for scenario in scenarios:
@@ -71,11 +72,11 @@ for scenario in scenarios:
         
     # Electric network
     if trans=='N':
-        df2.loc[:,'Trans LENGTH km'] = 0.0
+        df2.loc[:,'Transmission_km'] = 0.0
     if sub=='N':
         df2.loc[:,'Substations'] = 0.0
     if dist=='N':
-        df2.loc[:,'DistLineLength km'] = 0.0
+        df2.loc[:,'Distribution_km'] = 0.0
         
     # Total capacity
     central_total = central_fossil + central_solar + central_wind
@@ -85,28 +86,44 @@ for scenario in scenarios:
     df2.loc[:,'Solar_MW'] = 0.0
     df2.loc[:,'Wind_MW'] = 0.0
     df2.loc[:,'Total_MW'] = 0.0
+
+    # Create indicator for centralized
+    df2.loc[:, 'Central'] = 'N'
     
     # Divide distributed solar and wind (based on population)
-    total_pop = sum(df2.loc[:,'County Population']) 
+    total_pop = sum(df2.loc[:,'Population'])
     for ind in df2.index:
-        df2.loc[ind,'Solar_MW'] = dist_solar * 1000.0 * df2.loc[ind,'County Population'] / total_pop
-        df2.loc[ind,'Wind_MW'] = dist_wind * 1000.0 * df2.loc[ind,'County Population'] / total_pop
-        df2.loc[ind,'Total_MW'] = dist_total * 1000.0 * df2.loc[ind,'County Population'] / total_pop 
+        df2.loc[ind,'Solar_MW'] = dist_solar * 1000.0 * df2.loc[ind,'Population'] / total_pop
+        df2.loc[ind,'Wind_MW'] = dist_wind * 1000.0 * df2.loc[ind,'Population'] / total_pop
+        df2.loc[ind,'Total_MW'] = dist_total * 1000.0 * df2.loc[ind,'Population'] / total_pop
         
-    # Divide centralized solar and wind
-    central_dummies = ['central_dummy1','central_dummy2','central_dummy3','central_dummy4']
-    for central_dummy in central_dummies:
-        ind = municipality==central_dummy
-        df2.loc[ind,'Solar_MW'] = central_solar / 4.0 * 1000.0
-        df2.loc[ind,'Wind_MW'] = central_wind / 4.0 * 1000.0
-        df2.loc[ind,'Total_MW'] = central_total / 4.0 * 1000.0
+    # Create a centralized node for each region
+    for region in regions.unique():
+        # ind = regions == region
+
+        ind = df2.loc[:,'Region'] == region
+        avg_windspeed =  df2.loc[ind, 'Windspeed_mph'].mean()
+        region_pop = df2.loc[ind, 'Population'].sum()
+
+        node = "central_" + region
+        df2.loc[node, 'Node'] = node
+        df2.loc[node, 'Central'] = 'Y'
+        df2.loc[node, 'Region'] = region
+        df2.loc[node, 'Population'] = 0.0
+        df2.loc[node, 'Windspeed_mph'] = avg_windspeed
+        df2.loc[node, 'Transmission_km'] = 0.0
+        df2.loc[node, 'Substations'] = 0.0
+        df2.loc[node, 'Distribution_km'] = 0.0
+        df2.loc[node, 'Solar_MW'] = central_solar * 1000.0 * region_pop / total_pop
+        df2.loc[node, 'Wind_MW'] = central_wind * 1000.0 * region_pop / total_pop
+        df2.loc[node, 'Total_MW'] = central_total * 1000.0 * region_pop / total_pop
 
     # Calculate number of wind turbines, solar farms, trans and dist towers
     for ind in df2.index:
         df2.loc[ind,'Solar_farms'] = math.ceil(df2.loc[ind,'Solar_MW'] / solar_size)
         df2.loc[ind,'Wind_turbines'] = math.ceil(df2.loc[ind,'Wind_MW'] / wt_size)
-        df2.loc[ind,'Trans_towers'] = math.ceil(df2.loc[ind,'Trans LENGTH km'] / trans_distance)
-        df2.loc[ind,'Dist_towers'] = math.ceil(df2.loc[ind,'DistLineLength km'] / dist_distance)
+        df2.loc[ind,'Transmission_towers'] = math.ceil(df2.loc[ind,'Transmission_km'] / trans_distance)
+        df2.loc[ind,'Distribution_towers'] = math.ceil(df2.loc[ind,'Distribution_km'] / dist_distance)
 
     # Write to csv
     df2.to_csv(filename + '.csv')

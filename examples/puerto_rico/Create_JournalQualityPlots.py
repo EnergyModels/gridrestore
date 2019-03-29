@@ -35,8 +35,8 @@ plt.plot(actual_x,actual_y,label='Actual',color=(0.0,0.0,0.0),linestyle='None',m
 
 for filename,label,color,linestyle,marker in zip(files,labels,colors,linestyles,markers):
     df = pd.read_csv(filename)
-    x = df.loc[:,'Day']
-    y = 100.0 * df.loc[:,'% With Power']
+    x = df.loc[:,'time']
+    y = 100.0 * df.loc[:,'total_pwr_fr']
     plt.plot(x,y,label=label,color=color,linestyle=linestyle,marker=marker)
 
 # plt.legend(loc = 'upper center',bbox_to_anchor=(0.5, -0.1),ncol=len(labels)+1, scatterpoints = 1, frameon = False)
