@@ -59,9 +59,9 @@ for scenario in scenarios:
         filename = 'scenarioD'
         trans = 'N'
         sub = 'N'
-        dist_fossil = 3.17 + 0.7
-        dist_solar = 0.0
-        dist_wind = 4.4
+        dist_fossil = 3.5 + 0.7
+        dist_solar = 2.9
+        dist_wind = 2.0
                 
     #--------------------------------
     # Create scenarios

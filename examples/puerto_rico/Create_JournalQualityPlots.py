@@ -19,8 +19,8 @@ actual_x = 7.0 * np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
 actual_y = 100.0 * np.array([0.0,0.0,0.092,0.17,0.216,0.262,0.379,0.432,0.43,0.466,0.656,0.684,0.614,0.654,0.698,0.57,0.604,0.635,0.6825,0.7018,0.7155,0.7677,0.8564,0.8743,0.8943,0.9179,0.934,0.9456,0.958,1.0,1.0])
 
 # Series
-files = ['Results_scenarioA.csv','Results_scenarioB.csv','Results_scenarioC.csv','Results_scenarioD.csv']
-labels = ['Centralized - Natural Gas','Centralized - Hybrid','Distributed - Natural Gas','Distributed - Hybrid']
+files = ['Results_scenarioC.csv','Results_scenarioD.csv','Results_scenarioA.csv','Results_scenarioB.csv']
+labels = ['Distributed - Natural Gas', 'Distributed - Hybrid', 'Centralized - Natural Gas','Centralized - Hybrid']
 colors = [(0.380,0.380,0.380),(0.957,0.451,0.125),(.047, 0.149, 0.361),(0.847,0.000,0.067)] # Custom palette
 linestyles = ['-','-','-','-']
 markers = ['None','None','None','None',]
@@ -31,13 +31,15 @@ f = plt.figure()
 sns.set_style("white")
 sns.set(context="talk")
 
-plt.plot(actual_x,actual_y,label='Actual',color=(0.0,0.0,0.0),linestyle='None',marker='o')
+
 
 for filename,label,color,linestyle,marker in zip(files,labels,colors,linestyles,markers):
     df = pd.read_csv(filename)
     x = df.loc[:,'time']
     y = 100.0 * df.loc[:,'total_pwr_fr']
     plt.plot(x,y,label=label,color=color,linestyle=linestyle,marker=marker)
+
+plt.plot(actual_x,actual_y,label='Actual',color=(0.0,0.0,0.0),linestyle='None',marker='o')
 
 # plt.legend(loc = 'upper center',bbox_to_anchor=(0.5, -0.1),ncol=len(labels)+1, scatterpoints = 1, frameon = False)
 plt.legend(loc = 'upper center',bbox_to_anchor=(0.5, -0.1),ncol=3, scatterpoints = 1, numpoints=1,frameon = False)
