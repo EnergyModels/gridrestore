@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-resolution = 1000 # DPI
+resolution = 1200 # DPI
 
 # Actual Build-back
 actual_x = 7.0 * np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30])
@@ -42,12 +42,12 @@ for filename,label,color,linestyle,marker in zip(files,labels,colors,linestyles,
 plt.plot(actual_x,actual_y,label='Actual',color=(0.0,0.0,0.0),linestyle='None',marker='o')
 
 # plt.legend(loc = 'upper center',bbox_to_anchor=(0.5, -0.1),ncol=len(labels)+1, scatterpoints = 1, frameon = False)
-plt.legend(loc = 'upper center',bbox_to_anchor=(0.5, -0.1),ncol=3, scatterpoints = 1, numpoints=1,frameon = False)
+plt.legend(loc = 'upper center',bbox_to_anchor=(0.5, -0.2),ncol=3, scatterpoints = 1, numpoints=1,frameon = False)
 plt.xlabel("Day (-)")
 plt.ylabel("Population with electricity (%)")
 
-f.set_size_inches([12,8])
+f.set_size_inches([10,5])
 
 # Save
-savename = 'Results_GridRestoration.png'
+savename = 'Results_GridRestoration_presentation.png'
 plt.savefig(savename,dpi=resolution,bbox_inches="tight")
